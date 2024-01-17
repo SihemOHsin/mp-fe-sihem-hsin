@@ -1,0 +1,28 @@
+{
+  "produits": [
+    {
+      "id": 2,
+      "code": "ed1",
+      "designation": "Panier",
+      "prix": "1000"
+    },
+    {
+      "id": "3",
+      "code": "a2",
+      "designation": "ChaiseNoir",
+      "prix": "700"
+    },
+    {
+      "id": "4",
+      "code": "a1",
+      "designation": "Chaise",
+      "prix": "200"
+    },
+    {
+      "id": "5",
+      "code": "x1",
+      "designation": "Tapis beige",
+      "prix": "1000"
+    }
+  ]
+}

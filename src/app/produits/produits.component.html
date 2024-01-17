@@ -1,0 +1,67 @@
+<div class="container">
+
+  <form *ngIf="editMode" #produitForm="ngForm" (ngSubmit)="validerFormulaire(produitForm)">
+    <h1> Fiche Produit </h1>
+    <table>
+      <tr>
+        <td> Id: </td>
+        <input id="id" name="id" type="text" [(ngModel)]="produitCourant.id" required readonly />
+      <tr>
+        <td> Code: </td>
+        <input type="text" name="code" [(ngModel)]="produitCourant.code" />
+      </tr>
+      <tr>
+        <td> Désignation: </td>
+        <input type="text" name="designation" [(ngModel)]="produitCourant.designation" />
+      </tr>
+      <tr>
+        <td> Prix: </td>
+        <input type="text" name="prix" [(ngModel)]="produitCourant.prix" />
+      </tr>
+      <tr>
+        <td colspan="2">
+          <div *ngIf="erreur" class="error-message">
+            {{ erreur }}
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td [align]="'center'" colspan="2">
+          <input type="submit" value="Valider" class="btn btn-dark" [disabled]="!produitForm.form.valid" />
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+<div class="container">
+  <h1> liste des produits </h1>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th> Id </th>
+        <th>Code</th>
+        <th>Designation</th>
+        <th>Prix</th>
+        <th colspan="2">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of produits">
+        <td> {{p.id}}</td>
+        <td> {{p.code}}</td>
+        <td> {{p.designation}}</td>
+        <td> {{p.prix}}</td>
+        <td>
+          <button (click)="editerProduit(p)" class="btn btn-dark">
+            <i class="bi bi-pen"></i> Editer</button>
+        </td>
+        <td>
+          <button (click)="supprimerProduit(p)" class="btn btn-danger">
+            <i class="bi bi-trash"></i>
+            Supprimer
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
