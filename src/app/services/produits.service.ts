@@ -32,5 +32,10 @@ export class ProduitsService {
   deleteProduit(produit: Produit): Observable<any> {
     return this.http.delete(this.urlHote , { body: produit });
   }
+
+  findByPrixGreaterThanOrderByPrixAsc(prixMin: number): Observable<Produit[]> {
+    return this.http.get<Produit[]>(`${this.urlHote}findByPrixGreaterThanOrderByPrixAsc?prixMin=${prixMin}`);
+  }
+  
 }
 

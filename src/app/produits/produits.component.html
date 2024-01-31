@@ -45,6 +45,12 @@
 <div class="container">
   <h1> liste des produits </h1>
 
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <label for="prixMin">Filtrer par prix minimum:</label>
+    <input type="number" id="prixMin" name="prixMin" [(ngModel)]="prixMinFilter" />
+    <button (click)="filterProduitsParPrix()">Filtrer</button>
+  </div>
 
   <table class="table table-striped">
     <thead>

@@ -20,6 +20,7 @@ export class ProduitsComponent implements OnInit {
   editMode: boolean = false;
   searchTerm: string = '';
   filteredProduits: Produit[] = [];
+  prixMinFilter: number = 0;
 
   constructor(private produitsService: ProduitsService, private categoriesService: CategoriesService) { }
 
@@ -112,5 +113,19 @@ export class ProduitsComponent implements OnInit {
     }
   }
 
-  
+  // Filter and order products
+
+filterProduitsParPrix(): void {
+  this.produitsService.findByPrixGreaterThanOrderByPrixAsc(this.prixMinFilter).subscribe(
+    filteredProduits => {
+      console.log('Filtered produits:', filteredProduits);
+      this.produits = filteredProduits;
+      this.filteredProduits = filteredProduits;
+      console.log('Filter produits successful...');
+
+    },
+    error => console.error('Erreur filte produits par prix', error)
+  );
+}
+
 }
