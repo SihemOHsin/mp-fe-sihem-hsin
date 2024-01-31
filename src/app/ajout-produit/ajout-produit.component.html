@@ -1,27 +1,7 @@
-<!-- <p>ajout-produit works!</p>
-<div>
-    <h1> Fiche Produits </h1>
-  
-    <form (submit)="validerFormulaire()">
-      <label>Code: </label>
-      <input type="text" id="code" [(ngModel)]="nouveauProduit.code" required><br><br>
-  
-      <label>Designation: </label>
-      <input type="text" id="designation" [(ngModel)]="nouveauProduit.designation" required><br><br>
-  
-      <label>Prix: </label>
-      <input type="number" id="prix" [(ngModel)]="nouveauProduit.prix" required><br><br>
-  <br>
-      <button type="submit">Valider</button>
-    </form>
-</div> -->
 <div class="container">
   <h1> Fiche Produit </h1>
   <form #produitForm="ngForm" (ngSubmit)="validerFormulaire()">
     <table>
-      <tr>
-        <td> Id: </td>
-        <input id="id" name="id" type="text" [(ngModel)]="nouveauProduit.id" required />
       <tr>
         <td> Code: </td>
         <input type="text" name="code" [(ngModel)]="nouveauProduit.code" />
@@ -34,10 +14,20 @@
         <td> Prix: </td>
         <input type="text" name="prix" [(ngModel)]="nouveauProduit.prix" />
       </tr>
+      <tr>
+        <td>Categorie:</td>
+
+          <select id="categoryId" name="categoryId" [(ngModel)]="selectedCategoryId">
+            <option *ngFor="let category of categories" [value]="category.id">{{ category.libelle }}</option>
+          </select>
+        
+      </tr>
 
       <tr>
         <td [align]="'center'" colspan="2">
-          <input type="submit" value="Valider" class="btn btn-dark" [disabled]="!produitForm.form.valid" />
+          <input type="submit" value="Valider" class="btn btn-warning" [disabled]="!produitForm.form.valid" />
+          <button type="button" class="btn btn-warning button-margin" (click)="effacerFormulaire()">Effacer</button>
+
         </td>
       </tr>
     </table>

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Produit } from '../model/produit';
 import { NgForm } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { ProduitsService } from '../services/produits.service';
+import { CategoriesService } from '../services/categorie.service';
+import { Categorie } from '../model/categorie';
 
 @Component({
   selector: 'app-produits',
@@ -10,44 +11,90 @@ import { ProduitsService } from '../services/produits.service';
   styleUrls: ['./produits.component.css'],
 })
 export class ProduitsComponent implements OnInit {
-  produits: Produit[] = [];
-  produitCourant = new Produit();
-  erreur: string | null = null;
-  editMode = false;
-  loading = true;
 
-  constructor(private produitsService: ProduitsService) {}
+  produits: Produit[] = [];
+  categories: Categorie[] = [];
+  produitCourant: Produit = new Produit();
+  selectedCategory: Categorie | undefined;
+  erreur: string | undefined;
+  editMode: boolean = false;
+  searchTerm: string = '';
+  filteredProduits: Produit[] = [];
+
+  constructor(private produitsService: ProduitsService, private categoriesService: CategoriesService) { }
 
   ngOnInit(): void {
-    console.log('Initialisation du composant: Récupérer la liste des produits');
-    this.consulterProduits();
+    this.getProduits();
+    this.getCategories();
+
+
   }
 
-  consulterProduits() {
-    console.log('Récupérer la liste des produits---');
-    // Appeler la méthode 'getProduits' du service pour récupérer les données du JSON
-    this.produitsService.getProduits().subscribe({
-      // En cas de succès
-      next: (data) => {
-        console.log('Succès GET');
-        this.produits = data;
-        this.loading = false;
-      },
-      // En cas d'erreur
-      error: (err) => {
-        console.log('Erreur GET', err);
-        this.loading = false;
-      },
-    });
+  getProduits(): void {
+    this.produitsService.getProduits().subscribe(
+      produits => this.produits = produits,
+      
+      error => console.error('Error fetching produits', error)
+    );
   }
+
+  getCategories(): void {
+    this.categoriesService.getCategories().subscribe(
+      categories => this.categories = categories,
+      error => console.error('Error fetching categories', error)
+    );
+  }
+  
+  validerFormulaire(form: any): void {
+    if (this.editMode) {
+      const reponse: boolean = confirm("Produit existant. Confirmez-vous la mise à jour de :" + this.produitCourant.designation + " ?");
+      if (reponse) {
+        if (this.produitCourant && this.selectedCategory) {
+          this.produitCourant.categorie = this.selectedCategory;
+  
+          this.produitsService.updateProduit(this.produitCourant).subscribe(
+            updatedProduit => {
+              console.log('Updated successfully...');
+              // Update local 
+              const index = this.produits.findIndex(p => p.id === updatedProduit.id);
+              if (index !== -1) {
+                this.produits[index] = updatedProduit;
+              }
+              this.reset();
+            },
+            (error) => {
+              console.error('Erreur Update', error);
+              this.erreur = 'Erreur Update';
+            }
+          );
+        } else {
+          console.error('Error: selectedCategory is undefined');
+        }
+      }
+    }
+  }
+  
+
+
+  editerProduit(p: Produit) {
+    console.log('editer works...');
+    this.produitCourant = { ...p };
+    this.editMode = true;
+  }
+
+  private reset(): void {
+    this.editMode = false;
+    this.produitCourant = new Produit();
+    this.erreur = undefined;
+    this.selectedCategory = undefined;
+  }
+  
 
   supprimerProduit(p: Produit) {
-    let reponse: boolean = confirm(
-      'Voulez-vous supprimer le produit :' + p.designation + ' ?'
-    );
-    if (reponse == true) {
+    let reponse: boolean = confirm('Voulez-vous supprimer le produit :' + p.designation + ' ?');
+    if (reponse) {
       console.log('Suppression confirmée...');
-      this.produitsService.deleteProduit(p.id).subscribe({
+      this.produitsService.deleteProduit(p).subscribe({
         next: () => {
           console.log('Succès DELETE');
           let index: number = this.produits.indexOf(p);
@@ -57,7 +104,7 @@ export class ProduitsComponent implements OnInit {
           }
         },
         error: (err) => {
-          console.log('Erreur DELETE');
+          console.log('Erreur DELETE', err);
         },
       });
     } else {
@@ -65,55 +112,5 @@ export class ProduitsComponent implements OnInit {
     }
   }
 
-  validerFormulaire(form: NgForm) {
-    if (form.form.valid) {
-      console.log('Formulaire valide');
-      if (this.editMode) {
-        this.modifierProduit();
-        this.editMode = false;
-      } else {
-        console.log(
-          'Mode édition désactivé. Le formulaire est destiné uniquement à la mise à jour.'
-        );
-      }
-    } else {
-      console.log('Formulaire invalide');
-      this.erreur = 'Veuillez remplir tous les champs.';
-    }
-  }
-
-  modifierProduit() {
-    this.produitsService
-      .updateProduit(this.produitCourant.id, this.produitCourant)
-      .subscribe({
-        next: () => {
-          console.log('Succès modification de produit');
-
-          const index = this.produits.findIndex(
-            (p) => p.id === this.produitCourant.id
-          );
-          if (index !== -1) {
-            this.produits[index] = { ...this.produitCourant };
-          }
-          this.produitCourant = new Produit();
-          this.editMode = false;
-        },
-        error: (err) => {
-          console.log('Erreur modification de produit', err);
-          this.erreur = 'Erreur lors de la modification du produit.';
-        },
-      });
-  }
-
-  annulerEdition() {
-    this.produitCourant = new Produit();
-    this.editMode = false;
-  }
-
-  editerProduit(p: Produit) {
-    console.log('editer works...');
-    this.erreur = null;
-    this.produitCourant = { ...p };
-    this.editMode = true;
-  }
+  
 }

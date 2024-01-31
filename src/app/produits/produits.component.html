@@ -17,7 +17,16 @@
       <tr>
         <td> Prix: </td>
         <input type="text" name="prix" [(ngModel)]="produitCourant.prix" />
-      </tr>
+
+        <tr>
+          <td>Categorie:</td>
+          <td>
+            <select id="categorie" name="categorie" [(ngModel)]="selectedCategory" >
+              <option *ngFor="let categorie of categories" [ngValue]="categorie">{{ categorie.libelle }}</option>
+          </select> 
+        </td>
+        </tr>
+
       <tr>
         <td colspan="2">
           <div *ngIf="erreur" class="error-message">
@@ -35,6 +44,8 @@
 </div>
 <div class="container">
   <h1> liste des produits </h1>
+
+
   <table class="table table-striped">
     <thead>
       <tr>
@@ -42,6 +53,7 @@
         <th>Code</th>
         <th>Designation</th>
         <th>Prix</th>
+        <th>Categorie</th>
         <th colspan="2">Actions</th>
       </tr>
     </thead>
@@ -51,6 +63,7 @@
         <td> {{p.code}}</td>
         <td> {{p.designation}}</td>
         <td> {{p.prix}}</td>
+        <td> {{p.categorie?.libelle}}</td>
         <td>
           <button (click)="editerProduit(p)" class="btn btn-dark">
             <i class="bi bi-pen"></i> Editer</button>
